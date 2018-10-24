@@ -7,6 +7,7 @@ import StepLabel from '@material-ui/core/StepLabel';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import ImportOptions from "../ImportOptions/ImportOptions";
+import MapDataTable from "../MapDataTable/MapDataTable";
 
 
 const styles = theme => ({
@@ -20,15 +21,20 @@ const styles = theme => ({
     instructions: {
         marginTop: theme.spacing.unit,
         marginBottom: theme.spacing.unit,
-    }
+    },
+    mapData: {
+        width: '90%',
+        height: `${theme.spacing.unit * 10}px`,
+        marginTop: theme.spacing.unit * 5,
+    },
 });
 
-function getStepContent(stepIndex, props, classes) {
+function getStepContent(stepIndex, props) {
     switch (stepIndex) {
         case 0:
-            return renderImportOptions(props, classes);
+            return renderImportOptions(props);
         case 1:
-            return 'MAP DATA';
+            return renderMapDataTable(props);
         case 2:
             return 'IMPORT';
         default:
@@ -41,6 +47,15 @@ function renderImportOptions(props) {
     return (
         <div className={classes.root}>
             <ImportOptions/>
+        </div>
+    );
+}
+
+function renderMapDataTable(props) {
+    const {classes} = props;
+    return (
+        <div className={classes.mapData}>
+            <MapDataTable/>
         </div>
     );
 }

@@ -39,7 +39,10 @@ const styles = theme => ({
         left: 0,
         width: "100px",
         height: "100px"
-    }
+    },
+    paper: {
+        paddingBottom: 50,
+    },
 });
 
 const subscribers = {};
@@ -110,6 +113,7 @@ class Import extends Component {
                                        handleNext={this.handleNext}
                                        steps={steps}
                                        activeStep={activeStep}
+                                       className={classes.paper}
                         />
 
                         <AppBar position="fixed" color="primary" className={classes.appBar}>

@@ -2,9 +2,11 @@ import React from "react"
 import {storiesOf} from "@storybook/react"
 import StoryRouter from 'storybook-react-router';
 import Home from "./Home";
+import EntityProvider from "../../context/EntityProvider";
+
 
 const data = [];
 
 storiesOf('Home', module)
     .addDecorator(StoryRouter())
-    .add('Import', () => <Home/>);
+    .add('Import', () => <EntityProvider><Home/> </EntityProvider>);

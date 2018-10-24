@@ -5,5 +5,5 @@ import Login from "./Login";
 
 
 storiesOf('Login', module)
-	.addDecorator(StoryRouter())
-	.add('Form', () => <Login />);
+    .addDecorator(StoryRouter())
+    .add('Form', () => <Login/>);
