@@ -8,8 +8,9 @@ import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
-import Button from "@material-ui/core/Button/Button";
 import CircularProgress from '@material-ui/core/CircularProgress';
+import {ImportDataContext} from "../../context/ImportDataProvider";
+import FooterControls from "./FooterControls";
 
 
 const styles = theme => ({
@@ -43,101 +44,47 @@ const styles = theme => ({
     paper: {
         paddingBottom: 50,
     },
+    bottomControls: {
+        marginTop: theme.spacing.unit + 5
+    }
 });
 
-const subscribers = {};
-const data = [{
-    subscribers
-}];
-
-
-function getSteps() {
-    return ['UPLOAD', 'MAP DATA', 'IMPORT'];
-}
-
-
 class Import extends Component {
-    state = {
-        activeStep: 0,
-        success: false,
-    };
-
-    handleNext = () => {
-        this.setState(state => ({
-            activeStep: state.activeStep + 1,
-        }));
-
-        const {activeStep} = this.state;
-        const steps = getSteps();
-        if (activeStep === steps.length - 1) {
-            this.setState({success: true});
-            setTimeout(() => {
-                this.props.handleClose();
-            }, 1000);
-        }
-    };
-
-    handleBack = () => {
-        this.setState(state => ({
-            activeStep: state.activeStep - 1,
-        }));
-    };
-
-
     render() {
         const {classes, handleClose, selectedEntity} = this.props;
-        const {activeStep, success} = this.state;
-        const steps = getSteps();
         return (
-            <div className={classes.header}>
-                {success ? (
-                    <div className={classes.loaderContent}>
-                        < CircularProgress className={classes.progress} size={100}/>
-                    </div>
-                ) : (
-                    <React.Fragment>
-                        <AppBar>
-                            <Toolbar>
-                                <Typography variant="h6" color="inherit" className={classes.grow}>
-                                    Import {selectedEntity}
-                                </Typography>
+            <ImportDataContext.Consumer>
+                {context => {
+                    if (!context) return (<div><Typography> Context should not be empty! </Typography></div>);
+                    return (<div className={classes.header}>
+                        {context.success ? (
+                            <div className={classes.loaderContent}>
+                                < CircularProgress className={classes.progress} size={100}/>
+                            </div>
+                        ) : (
 
-                                <IconButton color="inherit" onClick={handleClose} aria-label="Close">
-                                    <CloseIcon/>
-                                </IconButton>
-                            </Toolbar>
-                        </AppBar>
-                        <Divider light/>
-                        <ImportStepper data={data}
-                                       handleBack={this.handleNext}
-                                       handleNext={this.handleNext}
-                                       steps={steps}
-                                       activeStep={activeStep}
-                                       className={classes.paper}
-                        />
+                            <React.Fragment>
+                                <AppBar>
+                                    <Toolbar>
+                                        <Typography variant="h6" color="inherit" className={classes.grow}>
+                                            Import {selectedEntity}
+                                        </Typography>
 
-                        <AppBar position="fixed" color="primary" className={classes.appBar}>
-                            <Toolbar className={classes.toolbar}>
-                                <Button
-                                    disabled={activeStep === 0}
-                                    onClick={this.handleBack}
-                                    className={classes.backButton}
-                                    variant="contained"
-                                    color="primary"
-                                >
-                                    Back
-                                </Button>
-                                <Button variant="contained" color="primary" onClick={this.handleNext}>
-                                    {activeStep === steps.length - 1 ? 'Import' : 'Next'}
-                                </Button>
+                                        <IconButton color="inherit" onClick={handleClose} aria-label="Close">
+                                            <CloseIcon/>
+                                        </IconButton>
+                                    </Toolbar>
+                                </AppBar>
+                                <Divider light/>
+                                <ImportStepper className={classes.paper}/>
+                                <FooterControls/>
 
-                            </Toolbar>
-                        </AppBar>
-                    </React.Fragment>
-                )}
-            </div>
+                            </React.Fragment>
+                        )}
+                    </div>)
+                }}
 
-
+            </ImportDataContext.Consumer>
         );
     }
 }

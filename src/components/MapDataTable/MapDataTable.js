@@ -8,6 +8,7 @@ import ListItem from '@material-ui/core/ListItem';
 import DataFieldSelect from "./DataFieldSelect";
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Divider from '@material-ui/core/Divider';
+import {ImportDataContext} from "../../context/ImportDataProvider";
 
 const styles = theme => ({
     root: {
@@ -29,6 +30,7 @@ const styles = theme => ({
         },
     },
     headerLabel: {
+        marginTop: theme.spacing.unit * 2,
         padding: theme.spacing.unit * 2,
         backgroundColor: "#EBEBEB"
     },
@@ -38,27 +40,6 @@ const styles = theme => ({
 });
 
 
-function createData(uboFieldName, otherFieldName, isValid) {
-    return {uboFieldName, otherFieldName, isValid};
-}
-
-const rows = [
-    createData('Username', "Username", true),
-    createData('Password', 'Password', true),
-    createData('First Name', 'First Name', false),
-    createData('Last Name', 'Last Name', true),
-    createData('Address Line 1', 'Address Line 1', false),
-    createData('Address Line 2', 'Address Line 2', false),
-    createData('City', 'City', false),
-    createData('State', 'State', false),
-    createData('Email Address', 'Email Address', false),
-    createData('Mobile Phone', 'Mobile Phone', false),
-    createData('Work Phone', 'Work Phone', false),
-    createData('Home Phone', 'Home Phone', false),
-    createData('Fax', 'Fax', false),
-];
-
-
 class MapDataTable extends React.Component {
 
 
@@ -66,28 +47,39 @@ class MapDataTable extends React.Component {
         const {classes} = this.props;
 
         return (
-            <React.Fragment>
-                <CssBaseline/>
-                <Grid className={classes.root} container direction="column" spacing={0}>
-                    <Grid item xs={12}>
-                        <Typography variant="title"><b>Map your fields to QuickBooks fields</b></Typography>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <div className={classes.headerLabel}>
-                            <DataFieldSelect rows={rows} currentRow={rows[0]} header={true}/>
-                        </div>
-                        <Divider light/>
-                        <List className={classes.list}>
-                            {rows.map(row => (
-                                <ListItem key={row.uboFieldName} button className={classes.lineItems}>
-                                    <DataFieldSelect rows={rows} currentRow={row} header={false}/>
-                                    <CssBaseline/>
-                                </ListItem>
-                            ))}
-                        </List>
-                    </Grid>
-                </Grid>
-            </React.Fragment>
+            <ImportDataContext.Consumer>
+                {context => {
+                    if (!context) return (<div><Typography> No data to map! </Typography></div>);
+                    return (
+                        <React.Fragment>
+                            <Grid className={classes.root} container direction="column" spacing={0}>
+                                <Grid item xs={12}>
+                                    <Typography variant="title" style={{margin: 5}}><b>Map your fields to QuickBooks
+                                        fields</b></Typography>
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <div className={classes.headerLabel}>
+                                        <DataFieldSelect header={true}/>
+                                    </div>
+                                    <Divider light/>
+                                    <List className={classes.list}>
+                                        {context.mapFields.map(field => (
+                                            <ListItem key={field.key} button className={classes.lineItems}>
+                                                <DataFieldSelect fieldLabel={field.label}
+                                                                 rows={context.rows}
+                                                                 currentRow={field}
+                                                                 importData={context.importData}
+                                                                 header={false}/>
+                                                <CssBaseline/>
+                                            </ListItem>
+                                        ))}
+                                    </List>
+                                </Grid>
+                            </Grid>
+                        </React.Fragment>
+                    );
+                }}
+            </ImportDataContext.Consumer>
         );
     }
 }

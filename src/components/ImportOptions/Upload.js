@@ -26,17 +26,11 @@ const styles = theme => ({
 class Upload extends React.Component {
     state = {
         spacing: '8',
-        fileName: ''
     };
 
-    handleUploadEvent = event => {
-        const fileNameTemp = event.target.files[0].name;
-        this.setState({fileName: fileNameTemp});
-    }
-
     render() {
-        const {classes} = this.props;
-        const {spacing, fileName} = this.state;
+        const {classes, handleUploadEvent, fileName} = this.props;
+        const {spacing} = this.state;
         return (
             <React.Fragment>
                 <div className={classes.root}>
@@ -67,7 +61,7 @@ class Upload extends React.Component {
                                         className={classes.input}
                                         id="outlined-button-file"
                                         type="file"
-                                        onChange={this.handleUploadEvent}
+                                        onChange={handleUploadEvent}
                                     />
                                     <label htmlFor="outlined-button-file">
                                         <Button variant="contained" component="span" className={classes.button}
@@ -81,7 +75,7 @@ class Upload extends React.Component {
                         </Grid>
                     </Grid>
                     <a href="https://docs.google.com/spreadsheets/d/1IbELYOfCnqSWPcLLC-wse-pt1Cwunpb2vmZy9iGCtZ4/edit#gid=0"
-                       target="_blank" rel="noopener noreferrer">Download a sample file &#8681; </a>
+                       target="_blank" rel="noopener noreferrer">View template &#8681; </a>
                 </div>
             </React.Fragment>
         );
@@ -90,6 +84,8 @@ class Upload extends React.Component {
 
 Upload.propTypes = {
     classes: PropTypes.object.isRequired,
+    handleUploadEvent: PropTypes.func.isRequired,
+    fileName: PropTypes.string.isRequired
 };
 
 export default withStyles(styles)(Upload);

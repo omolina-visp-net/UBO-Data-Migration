@@ -8,12 +8,18 @@ import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import ImportOptions from "../ImportOptions/ImportOptions";
 import MapDataTable from "../MapDataTable/MapDataTable";
+import Paper from '@material-ui/core/Paper';
+import ReviewDataTable from "../ReviewDataTable/ReviewDataTable";
+import {ImportDataContext} from "../../context/ImportDataProvider";
 
 
 const styles = theme => ({
     root: {
-        width: '90%',
         marginTop: theme.spacing.unit * 5,
+    },
+    content: {
+        margin: theme.spacing.unit + 5,
+        paddingBottom: theme.spacing.unit + 5,
     },
     backButton: {
         marginRight: theme.spacing.unit,
@@ -29,73 +35,79 @@ const styles = theme => ({
     },
 });
 
-function getStepContent(stepIndex, props) {
+function getStepContent(stepIndex) {
     switch (stepIndex) {
         case 0:
-            return renderImportOptions(props);
+            return renderImportOptions();
         case 1:
-            return renderMapDataTable(props);
+            return renderMapDataTable();
         case 2:
-            return 'IMPORT';
+            return renderReviewDataTable();
         default:
             return 'Uknown stepIndex';
     }
 }
 
-function renderImportOptions(props) {
-    const {classes} = props;
+function renderImportOptions() {
     return (
-        <div className={classes.root}>
-            <ImportOptions/>
-        </div>
+        <ImportOptions/>
     );
 }
 
-function renderMapDataTable(props) {
-    const {classes} = props;
+function renderMapDataTable() {
     return (
-        <div className={classes.mapData}>
-            <MapDataTable/>
-        </div>
+        <MapDataTable/>
+    );
+}
+
+function renderReviewDataTable() {
+    return (
+        <ReviewDataTable/>
     );
 }
 
 class ImportStepper extends React.Component {
 
     render() {
-        const {classes, activeStep, steps} = this.props;
-
+        const {classes} = this.props;
         return (
-            <div className={classes.root}>
-                {activeStep === steps.length ? (
-                    <div>
-                        <Typography>Success!</Typography>
-                    </div>
-                ) : (
-                    <div>
-                        <Stepper activeStep={activeStep} alternativeLabel>
-                            {steps.map(label => {
-                                return (
-                                    <Step key={label}>
-                                        <StepLabel>{label}</StepLabel>
-                                    </Step>
-                                );
-                            })}
-                        </Stepper>
-                        <Divider light/>
-                        {getStepContent(activeStep, this.props)}
-                    </div>
-                )}
-            </div>
+
+            <ImportDataContext.Consumer>
+                {context => {
+                    if (!context) return (<div><Typography> Context should not be empty! </Typography></div>);
+                    return (
+                        <div className={classes.root}>
+                            {context.activeStep === context.steps.length ? (
+                                <div>
+                                    <Typography>Success!</Typography>
+                                </div>
+                            ) : (
+                                <Paper>
+                                    <Stepper activeStep={context.activeStep} alternativeLabel>
+                                        {context.steps.map(label => {
+                                            return (
+                                                <Step key={label}>
+                                                    <StepLabel>{label}</StepLabel>
+                                                </Step>
+                                            );
+                                        })}
+                                    </Stepper>
+                                    <Divider light/>
+
+                                    <div className={classes.content}>
+                                        {getStepContent(context.activeStep)}
+                                    </div>
+                                </Paper>
+                            )}
+                        </div>);
+                }}
+            </ImportDataContext.Consumer>
         );
     }
 }
 
 ImportStepper.propTypes = {
-    classes: PropTypes.object,
-    data: PropTypes.array.isRequired,
-    steps: PropTypes.array.isRequired,
-    activeStep: PropTypes.number.isRequired
+    classes: PropTypes.object
 };
 
 export default withStyles(styles)(ImportStepper);

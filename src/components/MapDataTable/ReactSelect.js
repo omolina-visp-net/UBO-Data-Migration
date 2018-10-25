@@ -16,8 +16,8 @@ import {emphasize} from '@material-ui/core/styles/colorManipulator';
 
 function suggestions(rows) {
     return rows.map(suggestion => ({
-        value: suggestion.otherFieldName,
-        label: suggestion.otherFieldName,
+        value: suggestion,
+        label: suggestion,
     }));
 }
 

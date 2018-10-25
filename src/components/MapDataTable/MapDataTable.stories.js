@@ -3,6 +3,8 @@ import {storiesOf} from "@storybook/react"
 import StoryRouter from 'storybook-react-router';
 import MapDataTable from "./MapDataTable";
 import ReactSelect from "./ReactSelect";
+import ImportDataProvider from "../../context/ImportDataProvider";
+import Dialog from "@material-ui/core/Dialog/Dialog";
 
 function createData(uboFieldName, otherFieldName, isValid) {
     return {uboFieldName, otherFieldName, isValid};
@@ -27,5 +29,5 @@ const rows = [
 
 storiesOf('Map data table', module)
     .addDecorator(StoryRouter())
-    .add('Table', () => <MapDataTable/>)
+    .add('Table', () => <ImportDataProvider><MapDataTable/></ImportDataProvider>)
     .add('Select', () => <ReactSelect rows={rows}/>);

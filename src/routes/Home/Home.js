@@ -7,6 +7,7 @@ import Slide from '@material-ui/core/Slide';
 import Dialog from '@material-ui/core/Dialog';
 import Import from "../../components/ImportStepper/Import";
 import {EntityContext} from "../../context/EntityProvider";
+import ImportDataProvider from "../../context/ImportDataProvider";
 
 const styles = theme => ({
     root: {
@@ -88,7 +89,9 @@ class Home extends React.Component {
                                     onClose={this.handleClose}
                                     TransitionComponent={Transition}
                                 >
-                                    <Import handleClose={this.handleClose} selectedEntity={context.selectedEntity}/>
+                                    <ImportDataProvider>
+                                        <Import handleClose={this.handleClose} selectedEntity={context.selectedEntity}/>
+                                    </ImportDataProvider>
                                 </Dialog>
                             </div>
                         );
