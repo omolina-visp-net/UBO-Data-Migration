@@ -32,16 +32,6 @@ const styles = theme => ({
 });
 
 class DataFieldSelect extends React.Component {
-
-    state = {
-        field: '',
-        name: 'field'
-    };
-
-    handleChange = name => event => {
-        this.setState({[name]: event.target.value});
-    };
-
     renderHeader = () => {
         return (
             <Grid
@@ -58,7 +48,7 @@ class DataFieldSelect extends React.Component {
     }
 
     renderRows = () => {
-        const {classes, currentRow, importData} = this.props;
+        const {classes, currentRow, importData, dataMapValue} = this.props;
         const selectValues = Object.keys(importData[0]);
         return (
             <Grid
@@ -70,11 +60,11 @@ class DataFieldSelect extends React.Component {
                 <Grid item xs><Typography>{currentRow.label}</Typography></Grid>
                 <Grid item xs>
                     <div style={{height: 50, width: 250}}>
-                        <ReactSelect rows={selectValues}/>
+                        <ReactSelect rows={selectValues} uboFieldKey={currentRow.key}/>
                     </div>
                 </Grid>
                 <Grid item xs>
-                    {currentRow.isValid ? (
+                    {dataMapValue ? (
                             <Avatar className={classes.greenAvatar}>
                                 <CheckCircle/>
                             </Avatar>)
@@ -107,6 +97,7 @@ DataFieldSelect.propTypes = {
     header: PropTypes.bool.isRequired,
     importData: PropTypes.array,
     currentRow: PropTypes.object,
+    dataMapValue: PropTypes.string
 };
 
 export default withStyles(styles)(DataFieldSelect);

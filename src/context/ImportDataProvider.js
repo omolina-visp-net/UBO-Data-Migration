@@ -40,7 +40,8 @@ export default class ImportDataProvider extends React.Component {
         },
         buttonNextEnabled: false,
         loading: false,
-        errorMessage: ''
+        errorMessage: '',
+        dataMap: {}
     };
 
     handleSonarInputChange = name => event => {
@@ -75,7 +76,6 @@ export default class ImportDataProvider extends React.Component {
                     } else {
                         this.setState({importData: data}, () => {
                             this.enableNextButton();
-                            console.log({importData: this.state.importData});
                         });
                     }
                 });
@@ -119,13 +119,15 @@ export default class ImportDataProvider extends React.Component {
 
 
     handleNext = (client) => event => {
-        console.log(this.state.selectedOption);
         this.setState(state => ({
+            buttonNextEnabled: false,
             activeStep: state.activeStep + 1,
             loading: true
         }), async () => {
             if (this.state.selectedOption === 1) {
                 await this.fetchedSonarCustomers(client);
+            } else {
+                this.setState({loading: false});
             }
         });
 
@@ -150,11 +152,10 @@ export default class ImportDataProvider extends React.Component {
     }
 
     enableNextButton = () => {
-        const {importData, selectedOption, sonarInputs, activeStep} = this.state;
+        const {importData, selectedOption, sonarInputs, activeStep, dataMap} = this.state;
 
         switch (selectedOption) {
             case 0:
-                console.log({activeStep});
                 this.setState({buttonNextEnabled: importData.length > 0});
                 break;
             case 1:
@@ -162,15 +163,60 @@ export default class ImportDataProvider extends React.Component {
                     buttonNextEnabled: (sonarInputs.validated && !activeStep) ||
                         (activeStep === 1 && !importData && importData.length > 0)
                 });
-                // TODO
+                break;
+
+            case 2:
+                //TODO
                 break;
             default:
         }
 
+        switch (activeStep) {
+            case 1:
+                let enable = true;
+                for (const key of Object.keys(dataMap)) {
+                    const value = dataMap[key];
+                    if (!value) {
+                        console.log({key, value});
+                        enable = false;
+                        break;
+                    }
+                }
+                this.setState({buttonNextEnabled: enable});
+                break;
+            default:
+            //TODO
+        }
+
+    }
+
+    updateDataMap = async (uboFiedKey, dataImportField) => {
+        const _dataMap = {...this.state.dataMap, [uboFiedKey]: dataImportField};
+        this.setState({dataMap: _dataMap}, () => {
+            this.enableNextButton();
+        });
+    }
+
+    initDataMap = async (uboFiedKey, dataImportField) => {
+        if (uboFiedKey) {
+            const dataMapRow = {[uboFiedKey]: dataImportField};
+            let _dataMap = this.state.dataMap;
+            _dataMap[uboFiedKey] = dataImportField;
+            this.setState({dataMap: _dataMap});
+        }
+
+    }
+
+    componentDidMount() {
+        console.log("Import Data Provider");
+        const {uboFields} = this.state;
+        uboFields.map(async uboField => {
+            await this.initDataMap(uboField.key, "");
+        });
     }
 
     render() {
-        const {activeStep, selectedOption, importData, fileName, buttonNextEnabled, sonarInputs, uboFields, loading} = this.state;
+        const {activeStep, selectedOption, importData, fileName, buttonNextEnabled, sonarInputs, uboFields, loading, dataMap} = this.state;
         return (
             <ImportDataContext.Provider
                 value={{
@@ -183,13 +229,15 @@ export default class ImportDataProvider extends React.Component {
                     uboFields,
                     loading,
                     steps: this.steps(),
+                    dataMap,
                     setImportData: this.setImportData,
                     updateImportData: this.updateImportData,
                     setSelectedOption: this.setSelectedOption,
                     handleUploadEvent: this.handleUploadEvent,
                     handleNext: this.handleNext,
                     handleBack: this.handleBack,
-                    handleSonarInputChange: this.handleSonarInputChange
+                    handleSonarInputChange: this.handleSonarInputChange,
+                    updateDataMap: this.updateDataMap
                 }}
             >
                 {this.props.children}

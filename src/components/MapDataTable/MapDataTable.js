@@ -52,7 +52,10 @@ class MapDataTable extends React.Component {
                         <DataFieldSelect
                             currentRow={field}
                             importData={context.importData}
-                            header={false}/>
+                            header={false}
+                            updateDataMap={context.updateDataMap}
+                            dataMapValue={context.dataMap[field.key]}
+                        />
                         <CssBaseline/>
                     </ListItem>
                 ))}
@@ -72,7 +75,7 @@ class MapDataTable extends React.Component {
                             <Grid className={classes.root} container direction="column" spacing={0}>
                                 <Grid item xs={12}>
                                     <Typography variant="title" style={{margin: 5}}>
-                                        <b>Map your fields to QuickBooks fields</b>
+                                        <b>Map your fields to Ultimate Back Office fields</b>
                                     </Typography>
                                 </Grid>
                                 <Grid item xs={12}>

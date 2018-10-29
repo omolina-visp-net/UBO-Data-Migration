@@ -13,6 +13,7 @@ import Chip from '@material-ui/core/Chip';
 import MenuItem from '@material-ui/core/MenuItem';
 import CancelIcon from '@material-ui/icons/Cancel';
 import {emphasize} from '@material-ui/core/styles/colorManipulator';
+import {ImportDataContext} from "../../context/ImportDataProvider";
 
 function suggestions(rows) {
     const filteredRows = rows.filter(function (row) {
@@ -185,10 +186,13 @@ class ReactSelect extends React.Component {
         multi: null,
     };
 
-    handleChange = name => value => {
+    handleChange = (context, name) => value => {
+        const {uboFieldKey} = this.props;
         this.setState({
             [name]: value,
         });
+
+        context.updateDataMap(uboFieldKey, value.value);
     };
 
     render() {
@@ -205,20 +209,28 @@ class ReactSelect extends React.Component {
         };
 
         return (
-            <div className={classes.root}>
-                <NoSsr>
-                    <Select
-                        classes={classes}
-                        styles={selectStyles}
-                        options={suggestions(rows)}
-                        components={components}
-                        value={this.state.single}
-                        onChange={this.handleChange('single')}
-                        placeholder="Select field"
-                    />
-                    <div className={classes.divider}/>
-                </NoSsr>
-            </div>
+            <ImportDataContext.Consumer>
+                {context => {
+                    if (!context) return (<div><Typography> Context should not be empty! </Typography></div>);
+                    return (
+                        <div className={classes.root}>
+                            <NoSsr>
+                                <Select
+                                    classes={classes}
+                                    styles={selectStyles}
+                                    options={suggestions(rows)}
+                                    components={components}
+                                    value={this.state.single}
+                                    onChange={this.handleChange(context, 'single')}
+                                    placeholder="Select field"
+                                />
+                                <div className={classes.divider}/>
+                            </NoSsr>
+                        </div>
+                    );
+                }}
+
+            </ImportDataContext.Consumer>
         );
     }
 }
@@ -226,7 +238,8 @@ class ReactSelect extends React.Component {
 ReactSelect.propTypes = {
     classes: PropTypes.object.isRequired,
     theme: PropTypes.object.isRequired,
-    rows: PropTypes.array.isRequired
+    rows: PropTypes.array.isRequired,
+    uboFieldKey: PropTypes.string.isRequired
 };
 
 export default withStyles(styles, {withTheme: true})(ReactSelect);
