@@ -12,6 +12,8 @@
     "contentful": "^7.0.4",
     "crypto": "^1.0.1",
     "csv": "^4.0.0",
+    "csvtojson": "^2.0.8",
+    "fs": "^0.0.1-security",
     "gql": "^1.1.2",
     "graphql": "^14.0.2",
     "graphql-tag": "^2.10.0",

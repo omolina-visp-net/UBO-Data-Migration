@@ -6,6 +6,7 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import {ImportDataContext} from "../../context/ImportDataProvider";
 import Typography from "@material-ui/core/Typography/Typography";
+import {ApolloConsumer} from "react-apollo";
 
 const styles = theme => ({
     bottomControls: {
@@ -13,8 +14,10 @@ const styles = theme => ({
     }
 });
 
+
 class FooterControls extends Component {
-    render() {
+
+    renderControls = (client) => {
         const {classes} = this.props;
         return (
             <ImportDataContext.Consumer>
@@ -46,7 +49,7 @@ class FooterControls extends Component {
                                             disabled={!context.buttonNextEnabled}
                                             variant="contained"
                                             color="primary"
-                                            onClick={context.handleNext}>
+                                            onClick={context.handleNext(client)}>
                                             {context.activeStep === context.steps.length - 1 ? 'Import' : 'Next'}
                                         </Button>
                                     </Grid>
@@ -56,6 +59,14 @@ class FooterControls extends Component {
                     )
                 }}
             </ImportDataContext.Consumer>
+        );
+    }
+
+    render() {
+        return (
+            <ApolloConsumer>
+                {client => this.renderControls(client)}
+            </ApolloConsumer>
         );
     }
 }

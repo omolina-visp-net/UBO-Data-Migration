@@ -58,7 +58,8 @@ class DataFieldSelect extends React.Component {
     }
 
     renderRows = () => {
-        const {classes, currentRow, fieldLabel, importData} = this.props;
+        const {classes, currentRow, importData} = this.props;
+        const selectValues = Object.keys(importData[0]);
         return (
             <Grid
                 container
@@ -66,10 +67,10 @@ class DataFieldSelect extends React.Component {
                 justify="center"
                 alignItems="center"
             >
-                <Grid item xs><Typography>{fieldLabel}</Typography></Grid>
+                <Grid item xs><Typography>{currentRow.label}</Typography></Grid>
                 <Grid item xs>
                     <div style={{height: 50, width: 250}}>
-                        <ReactSelect rows={importData[0]}/>
+                        <ReactSelect rows={selectValues}/>
                     </div>
                 </Grid>
                 <Grid item xs>
@@ -104,7 +105,6 @@ class DataFieldSelect extends React.Component {
 DataFieldSelect.propTypes = {
     classes: PropTypes.object.isRequired,
     header: PropTypes.bool.isRequired,
-    fieldLabel: PropTypes.string,
     importData: PropTypes.array,
     currentRow: PropTypes.object,
 };

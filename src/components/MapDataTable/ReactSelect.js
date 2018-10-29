@@ -15,7 +15,11 @@ import CancelIcon from '@material-ui/icons/Cancel';
 import {emphasize} from '@material-ui/core/styles/colorManipulator';
 
 function suggestions(rows) {
-    return rows.map(suggestion => ({
+    const filteredRows = rows.filter(function (row) {
+        return row !== "__typename";
+    });
+
+    return filteredRows.map(suggestion => ({
         value: suggestion,
         label: suggestion,
     }));

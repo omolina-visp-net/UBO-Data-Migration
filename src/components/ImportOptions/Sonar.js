@@ -17,7 +17,6 @@ const styles = theme => ({
 
 
 class Sonar extends React.Component {
-
     render() {
         const {classes, handleSonarInputChange, sonarInputs} = this.props;
         return (
@@ -39,6 +38,7 @@ class Sonar extends React.Component {
                             margin="normal"
                             variant="outlined"
                             onChange={handleSonarInputChange('subdomain')}
+                            error={sonarInputs.subdomain === ''}
                         />
 
                     </Grid>
@@ -53,6 +53,7 @@ class Sonar extends React.Component {
                             margin="normal"
                             variant="outlined"
                             onChange={handleSonarInputChange('username')}
+                            error={sonarInputs.username === ''}
                         />
                     </Grid>
                     <Grid item>
@@ -66,6 +67,7 @@ class Sonar extends React.Component {
                             variant="outlined"
                             type="password"
                             onChange={handleSonarInputChange('password')}
+                            error={sonarInputs.password === ''}
                         />
                     </Grid>
                 </Grid>

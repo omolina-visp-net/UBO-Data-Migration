@@ -1,10 +1,32 @@
 import React from "react";
 import customerFields from "../data/customer_fields";
 import csv from 'csv';
+import gql from "graphql-tag";
+
+const GET_SONAR_CUSTOMERS = gql`{
+    sonarCustomers(domain: "tekwav", username: "datasync", password: "Datasync!123") {
+        Id
+        FirstName
+        LastName
+        Username
+        BalanceTotal
+        AddressLine1
+        AddressLine2
+        City
+        State
+        EmailAddress
+        MobilePhone
+        WorkPhone
+        HomePhone
+        Fax
+    }
+}
+`;
 
 export const ImportDataContext = React.createContext();
 export default class ImportDataProvider extends React.Component {
     state = {
+        uboFields: customerFields.fields,
         importData: [],
         selectedOption: 0,
         activeStep: 0,
@@ -16,7 +38,9 @@ export default class ImportDataProvider extends React.Component {
             password: '',
             validated: false,
         },
-        buttonNextEnabled: false
+        buttonNextEnabled: false,
+        loading: false,
+        errorMessage: ''
     };
 
     handleSonarInputChange = name => event => {
@@ -45,7 +69,7 @@ export default class ImportDataProvider extends React.Component {
             if (!reader.result) {
                 console.log({error: "No file uploaded!"});
             } else {
-                csv.parse(reader.result, (err, data) => {
+                csv.parse(reader.result, {columns: true}, (err, data) => {
                     if (err) {
                         console.log({error: "Error parsing csv file!"});
                     } else {
@@ -55,14 +79,16 @@ export default class ImportDataProvider extends React.Component {
                         });
                     }
                 });
+
             }
         };
         reader.readAsBinaryString(event.target.files[0]);
+
     }
 
-    setImportData = (data) => {
-        this.setState({importData: data});
 
+    setImportData = (data) => {
+        this.setState({importData: data, loading: false});
     }
 
     updateImportData = (updatedRow) => {
@@ -78,26 +104,30 @@ export default class ImportDataProvider extends React.Component {
         })
     }
 
+    fetchedSonarCustomers = async (client) => {
+        const {data, error} = await client.query({
+            query: GET_SONAR_CUSTOMERS
+        });
 
-    mapFields = () => {
-        let mapFields = [];
-        const {selectedOption} = this.state;
-        switch (selectedOption) {
-            case 0:
-                mapFields = customerFields.fields;
-                break;
-            case 1:
-                mapFields = [];
-                break;
-            default:
+        if (error) {
+            this.setState({errorMessage: JSON.stringify(error)});
+        } else {
+            this.setImportData(data.sonarCustomers);
         }
-        return mapFields;
+
     }
 
-    handleNext = () => {
+
+    handleNext = (client) => event => {
+        console.log(this.state.selectedOption);
         this.setState(state => ({
             activeStep: state.activeStep + 1,
-        }));
+            loading: true
+        }), async () => {
+            if (this.state.selectedOption === 1) {
+                await this.fetchedSonarCustomers(client);
+            }
+        });
 
         const {activeStep} = this.state;
         const steps = this.steps();
@@ -140,7 +170,7 @@ export default class ImportDataProvider extends React.Component {
     }
 
     render() {
-        const {activeStep, selectedOption, importData, fileName, buttonNextEnabled, sonarInputs} = this.state;
+        const {activeStep, selectedOption, importData, fileName, buttonNextEnabled, sonarInputs, uboFields, loading} = this.state;
         return (
             <ImportDataContext.Provider
                 value={{
@@ -150,7 +180,8 @@ export default class ImportDataProvider extends React.Component {
                     fileName,
                     buttonNextEnabled,
                     sonarInputs,
-                    mapFields: this.mapFields(),
+                    uboFields,
+                    loading,
                     steps: this.steps(),
                     setImportData: this.setImportData,
                     updateImportData: this.updateImportData,
