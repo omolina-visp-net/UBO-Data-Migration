@@ -12,7 +12,6 @@ export default class EntityProvider extends React.Component {
 
     setSelectedEntity = index => {
         this.setState({selectedEntityIndex: index});
-        console.log("setSelectedEntity", entities[index]);
     };
 
     getSelectedEntity = () => {

@@ -35,8 +35,9 @@ const styles = theme => ({
     },
 });
 
-function getStepContent(stepIndex) {
-    switch (stepIndex) {
+function getStepContent(context) {
+    const {activeStep} = context;
+    switch (activeStep) {
         case 0:
             return renderImportOptions();
         case 1:
@@ -95,7 +96,7 @@ class ImportStepper extends React.Component {
                                     <Divider light/>
 
                                     <div className={classes.content}>
-                                        {getStepContent(context.activeStep)}
+                                        {getStepContent(context)}
                                     </div>
                                 </Paper>
                             )}

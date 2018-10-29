@@ -41,7 +41,9 @@ export default class ImportDataProvider extends React.Component {
         buttonNextEnabled: false,
         loading: false,
         errorMessage: '',
-        dataMap: {}
+        dataMap: {},
+        importTableHeader: [],
+        importTableRows: []
     };
 
     handleSonarInputChange = name => event => {
@@ -124,10 +126,14 @@ export default class ImportDataProvider extends React.Component {
             activeStep: state.activeStep + 1,
             loading: true
         }), async () => {
-            if (this.state.selectedOption === 1) {
+            if (this.state.selectedOption === 1 && this.state.activeStep === 1) {
                 await this.fetchedSonarCustomers(client);
+            } else if (this.state.activeStep === 2) {
+                this.initImportTable();
             } else {
-                this.setState({loading: false});
+                setTimeout(() => {
+                    this.setState({loading: false});
+                }, 1000);
             }
         });
 
@@ -177,7 +183,6 @@ export default class ImportDataProvider extends React.Component {
                 for (const key of Object.keys(dataMap)) {
                     const value = dataMap[key];
                     if (!value) {
-                        console.log({key, value});
                         enable = false;
                         break;
                     }
@@ -199,7 +204,6 @@ export default class ImportDataProvider extends React.Component {
 
     initDataMap = async (uboFiedKey, dataImportField) => {
         if (uboFiedKey) {
-            const dataMapRow = {[uboFiedKey]: dataImportField};
             let _dataMap = this.state.dataMap;
             _dataMap[uboFiedKey] = dataImportField;
             this.setState({dataMap: _dataMap});
@@ -207,8 +211,45 @@ export default class ImportDataProvider extends React.Component {
 
     }
 
+    initImportTable() {
+        const {dataMap, uboFields, importData} = this.state;
+        const dataMapKeysArray = Object.keys(dataMap);
+        let columnHeader = [], rows = [];
+        for (const key of dataMapKeysArray) {
+            const uboField = uboFields.filter(uboField => uboField.key === key);
+            const columnName = uboField[0].label;
+            columnHeader.push(columnName);
+        }
+
+        for (let importRow of importData) {
+            let row = [];
+            for (let uboField of uboFields) {
+                const key = uboField.key
+                const columnNameMap = dataMap[key];
+                row.push(importRow[columnNameMap]);
+            }
+            rows.push(row);
+        }
+        this.setState({importTableHeader: columnHeader, importTableRows: rows, loading: false});
+
+    }
+
+    removeRowImportTable = (rowsDeleted) => {
+        const _importTableRows = this.state.importTableRows;
+        this.setState({importTableRows: []}, () => {
+            let rowsDeletedList = [];
+            for (let row of rowsDeleted.data) {
+                rowsDeletedList.push(_importTableRows[row.index]);
+            }
+            let newImportTableRows = _importTableRows;
+            for (let rowDeleted of rowsDeletedList) {
+                newImportTableRows = newImportTableRows.filter(row => row !== rowDeleted);
+            }
+            this.setState({importTableRows: newImportTableRows});
+        });
+    }
+
     componentDidMount() {
-        console.log("Import Data Provider");
         const {uboFields} = this.state;
         uboFields.map(async uboField => {
             await this.initDataMap(uboField.key, "");
@@ -216,7 +257,11 @@ export default class ImportDataProvider extends React.Component {
     }
 
     render() {
-        const {activeStep, selectedOption, importData, fileName, buttonNextEnabled, sonarInputs, uboFields, loading, dataMap} = this.state;
+        const {
+            activeStep, selectedOption, importData, fileName,
+            buttonNextEnabled, sonarInputs, uboFields, loading,
+            dataMap, importTableHeader, importTableRows
+        } = this.state;
         return (
             <ImportDataContext.Provider
                 value={{
@@ -228,8 +273,10 @@ export default class ImportDataProvider extends React.Component {
                     sonarInputs,
                     uboFields,
                     loading,
-                    steps: this.steps(),
                     dataMap,
+                    importTableHeader,
+                    importTableRows,
+                    steps: this.steps(),
                     setImportData: this.setImportData,
                     updateImportData: this.updateImportData,
                     setSelectedOption: this.setSelectedOption,
@@ -237,7 +284,8 @@ export default class ImportDataProvider extends React.Component {
                     handleNext: this.handleNext,
                     handleBack: this.handleBack,
                     handleSonarInputChange: this.handleSonarInputChange,
-                    updateDataMap: this.updateDataMap
+                    updateDataMap: this.updateDataMap,
+                    removeRowImportTable: this.removeRowImportTable
                 }}
             >
                 {this.props.children}
