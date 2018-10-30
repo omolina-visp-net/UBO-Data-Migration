@@ -76,9 +76,15 @@ export default class ImportDataProvider extends React.Component {
                     if (err) {
                         console.log({error: "Error parsing csv file!"});
                     } else {
-                        this.setState({importData: data}, () => {
-                            this.enableNextButton();
-                        });
+                        this.setState({
+                                importData: data,
+                                importTableRows: [],
+                                importTableHeader: [],
+                                dataMap: {}
+                            },
+                            () => {
+                                this.enableNextButton();
+                            });
                     }
                 });
 
@@ -170,16 +176,15 @@ export default class ImportDataProvider extends React.Component {
                         (activeStep === 1 && !importData && importData.length > 0)
                 });
                 break;
-
             case 2:
                 //TODO
                 break;
             default:
         }
 
+        let enable = true;
         switch (activeStep) {
             case 1:
-                let enable = true;
                 for (const key of Object.keys(dataMap)) {
                     const value = dataMap[key];
                     if (!value) {
@@ -189,6 +194,19 @@ export default class ImportDataProvider extends React.Component {
                 }
                 this.setState({buttonNextEnabled: enable});
                 break;
+            case 2:
+                const {importTableRows} = this.state;
+                for (let rows of importTableRows) {
+                    const hasEmptyValue = rows.includes("");
+                    if (hasEmptyValue) {
+                        enable = false;
+                        console.log({importTableRows});
+                        break;
+                    }
+                }
+                this.setState({buttonNextEnabled: enable});
+                break;
+
             default:
             //TODO
         }
@@ -197,7 +215,7 @@ export default class ImportDataProvider extends React.Component {
 
     updateDataMap = async (uboFiedKey, dataImportField) => {
         const _dataMap = {...this.state.dataMap, [uboFiedKey]: dataImportField};
-        this.setState({dataMap: _dataMap}, () => {
+        this.setState({dataMap: _dataMap, importTableHeader: [], importTableRows: []}, () => {
             this.enableNextButton();
         });
     }
@@ -208,7 +226,6 @@ export default class ImportDataProvider extends React.Component {
             _dataMap[uboFiedKey] = dataImportField;
             this.setState({dataMap: _dataMap});
         }
-
     }
 
     initImportTable() {
@@ -230,7 +247,9 @@ export default class ImportDataProvider extends React.Component {
             }
             rows.push(row);
         }
-        this.setState({importTableHeader: columnHeader, importTableRows: rows, loading: false});
+        this.setState({importTableHeader: columnHeader, importTableRows: rows, loading: false}, () => {
+            this.enableNextButton();
+        });
 
     }
 
@@ -245,8 +264,20 @@ export default class ImportDataProvider extends React.Component {
             for (let rowDeleted of rowsDeletedList) {
                 newImportTableRows = newImportTableRows.filter(row => row !== rowDeleted);
             }
-            this.setState({importTableRows: newImportTableRows});
+            this.setState({importTableRows: newImportTableRows}, () => {
+                this.enableNextButton();
+            });
         });
+    }
+
+    updateRowImportTable = (rowIndex, columnIndex, value) => {
+        let _importTableRows = this.state.importTableRows;
+        let dataRow = _importTableRows[rowIndex];
+        dataRow[columnIndex] = value;
+        _importTableRows[rowIndex] = dataRow;
+        this.setState({importTableRows: _importTableRows}, () => {
+            this.enableNextButton();
+        })
     }
 
     componentDidMount() {
@@ -285,7 +316,8 @@ export default class ImportDataProvider extends React.Component {
                     handleBack: this.handleBack,
                     handleSonarInputChange: this.handleSonarInputChange,
                     updateDataMap: this.updateDataMap,
-                    removeRowImportTable: this.removeRowImportTable
+                    removeRowImportTable: this.removeRowImportTable,
+                    updateRowImportTable: this.updateRowImportTable
                 }}
             >
                 {this.props.children}
