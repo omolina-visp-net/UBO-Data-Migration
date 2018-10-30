@@ -19,7 +19,6 @@ class ReviewDataTable extends React.Component {
                                 index={tableMeta.columnIndex}
                                 tableMeta={tableMeta}
                                 value={value}
-                                change={event => updateValue(event)}
                             />
                         );
                     }

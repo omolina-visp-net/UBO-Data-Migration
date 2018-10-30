@@ -21,7 +21,7 @@ class CellTextField extends React.Component {
     }
 
     render() {
-        const {tableMeta, value, change} = this.props;
+        const {tableMeta, value} = this.props;
         const {textValue} = this.state;
         return (
             <ImportDataContext.Consumer>
@@ -35,7 +35,7 @@ class CellTextField extends React.Component {
                             variant="outlined"
                             required={true}
                             style={{width: 200}}
-                            onChange={event => change(event.target.value, tableMeta.columnIndex)}
+                            onChange={this.handleOnChange(context)}
                         />
                     )
                 }}
@@ -46,8 +46,7 @@ class CellTextField extends React.Component {
 
 CellTextField.propTypes = {
     value: PropTypes.string.isRequired,
-    tableMeta: PropTypes.object.isRequired,
-    change: PropTypes.func.isRequired
+    tableMeta: PropTypes.object.isRequired
 };
 
 export default CellTextField;
