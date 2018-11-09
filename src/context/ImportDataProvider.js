@@ -65,39 +65,41 @@ export default class ImportDataProvider extends React.Component {
     };
 
     handleUploadEvent = event => {
-        const fileNameTemp = event.target.files[0].name;
-        this.setState({fileName: fileNameTemp});
-        const reader = new FileReader();
-        reader.onload = async () => {
-            if (!reader.result) {
-                console.log({error: "No file uploaded!"});
-            } else {
-                csv.parse(reader.result, {columns: true}, (err, data) => {
-                    if (err) {
-                        console.log({error: "Error parsing csv file!"});
-                    } else {
-                        this.setState({
-                                importData: data,
-                                importTableRows: [],
-                                importTableHeader: [],
-                                dataMap: {}
-                            },
-                            () => {
-                                this.enableNextButton();
-                            });
-                    }
-                });
+        const file = event.target.files[0];
+        if (file) {
+            const fileNameTemp = file.name;
+            this.setState({fileName: fileNameTemp});
+            const reader = new FileReader();
+            reader.onload = async () => {
+                if (!reader.result) {
+                    console.log({error: "No file uploaded!"});
+                } else {
+                    csv.parse(reader.result, {columns: true}, (err, data) => {
+                        if (err) {
+                            console.log({error: "Error parsing csv file!"});
+                        } else {
+                            this.setState({
+                                    importData: data,
+                                    importTableRows: [],
+                                    importTableHeader: [],
+                                    dataMap: {}
+                                },
+                                () => {
+                                    this.enableNextButton();
+                                });
+                        }
+                    });
 
-            }
-        };
-        reader.readAsBinaryString(event.target.files[0]);
-
-    }
+                }
+            };
+            reader.readAsBinaryString(event.target.files[0]);
+        }
+    };
 
 
     setImportData = (data) => {
         this.setState({importData: data, loading: false});
-    }
+    };
 
     updateImportData = (updatedRow) => {
         const {rows} = this.state;
@@ -110,7 +112,7 @@ export default class ImportDataProvider extends React.Component {
         this.setState({selectedOption: parseInt(event.target.value)}, () => {
             this.enableNextButton();
         })
-    }
+    };
 
     fetchedSonarCustomers = async (client) => {
         const {data, error} = await client.query({
@@ -123,7 +125,7 @@ export default class ImportDataProvider extends React.Component {
             this.setImportData(data.sonarCustomers);
         }
 
-    }
+    };
 
 
     handleNext = (client) => event => {
@@ -156,12 +158,14 @@ export default class ImportDataProvider extends React.Component {
     handleBack = () => {
         this.setState(state => ({
             activeStep: state.activeStep - 1,
-        }));
+        }), () => {
+            this.enableNextButton();
+        });
     };
 
     steps = () => {
         return ['IMPORT OPTION ', 'MAP DATA', 'IMPORT'];
-    }
+    };
 
     enableNextButton = () => {
         const {importData, selectedOption, sonarInputs, activeStep, dataMap} = this.state;
@@ -200,7 +204,6 @@ export default class ImportDataProvider extends React.Component {
                     const hasEmptyValue = rows.includes("");
                     if (hasEmptyValue) {
                         enable = false;
-                        console.log({importTableRows});
                         break;
                     }
                 }
@@ -211,14 +214,14 @@ export default class ImportDataProvider extends React.Component {
             //TODO
         }
 
-    }
+    };
 
     updateDataMap = async (uboFiedKey, dataImportField) => {
         const _dataMap = {...this.state.dataMap, [uboFiedKey]: dataImportField};
         this.setState({dataMap: _dataMap, importTableHeader: [], importTableRows: []}, () => {
             this.enableNextButton();
         });
-    }
+    };
 
     initDataMap = async (uboFiedKey, dataImportField) => {
         if (uboFiedKey) {
@@ -226,7 +229,7 @@ export default class ImportDataProvider extends React.Component {
             _dataMap[uboFiedKey] = dataImportField;
             this.setState({dataMap: _dataMap});
         }
-    }
+    };
 
     initImportTable() {
         const {dataMap, uboFields, importData} = this.state;
@@ -250,7 +253,6 @@ export default class ImportDataProvider extends React.Component {
         this.setState({importTableHeader: columnHeader, importTableRows: rows, loading: false}, () => {
             this.enableNextButton();
         });
-
     }
 
     removeRowImportTable = (rowsDeleted) => {
@@ -268,7 +270,7 @@ export default class ImportDataProvider extends React.Component {
                 this.enableNextButton();
             });
         });
-    }
+    };
 
     updateRowImportTable = (rowIndex, columnIndex, value) => {
         let _importTableRows = this.state.importTableRows;
@@ -278,7 +280,7 @@ export default class ImportDataProvider extends React.Component {
         this.setState({importTableRows: _importTableRows}, () => {
             this.enableNextButton();
         })
-    }
+    };
 
     componentDidMount() {
         const {uboFields} = this.state;

@@ -14,10 +14,12 @@ class CellTextField extends React.Component {
         this.setState({textValue: value});
     }
 
-    handleOnChange = (context) => event => {
+    handleOnChange = event => {
         this.setState({textValue: event.target.value});
+    }
+    handleOnBlur = (context) => event => {
         const {tableMeta} = this.props;
-        context.updateRowImportTable(tableMeta.rowIndex, tableMeta.columnIndex, event.target.value);
+        context.updateRowImportTable(tableMeta.rowIndex, tableMeta.columnIndex, this.state.textValue);
     }
 
     render() {
@@ -35,7 +37,8 @@ class CellTextField extends React.Component {
                             variant="outlined"
                             required={true}
                             style={{width: 200}}
-                            onChange={this.handleOnChange(context)}
+                            onChange={this.handleOnChange}
+                            onBlur={this.handleOnBlur(context)}
                         />
                     )
                 }}

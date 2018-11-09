@@ -190,13 +190,13 @@ class ReactSelect extends React.Component {
         const {uboFieldKey} = this.props;
         this.setState({
             [name]: value,
+        }, async () => {
+            await context.updateDataMap(uboFieldKey, value.value);
         });
-
-        context.updateDataMap(uboFieldKey, value.value);
     };
 
     render() {
-        const {classes, theme, rows} = this.props;
+        const {classes, theme, rows, uboFieldKey} = this.props;
 
         const selectStyles = {
             input: base => ({
@@ -212,6 +212,12 @@ class ReactSelect extends React.Component {
             <ImportDataContext.Consumer>
                 {context => {
                     if (!context) return (<div><Typography> Context should not be empty! </Typography></div>);
+                    const {dataMap} = context;
+                    const value = dataMap[uboFieldKey];
+                    const selectValue = value ? {
+                        value: dataMap[uboFieldKey],
+                        label: dataMap[uboFieldKey]
+                    } : null;
                     return (
                         <div className={classes.root}>
                             <NoSsr>
@@ -220,7 +226,7 @@ class ReactSelect extends React.Component {
                                     styles={selectStyles}
                                     options={suggestions(rows)}
                                     components={components}
-                                    value={this.state.single}
+                                    value={selectValue}
                                     onChange={this.handleChange(context, 'single')}
                                     placeholder="Select field"
                                 />
