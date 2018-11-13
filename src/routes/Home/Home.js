@@ -125,7 +125,7 @@ const entities = [
 
 class Home extends React.Component {
     state = {
-        open: false
+        open: true
     };
 
 
