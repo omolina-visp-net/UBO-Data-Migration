@@ -53,17 +53,21 @@ export default class ImportDataProvider extends React.Component {
         }, () => {
             if (action) {
                 this.setState(prevState => {
-                    return {...defaultValues, entity: prevState.nextEntity }
+                    return {...defaultValues, entity: prevState.nextEntity}
                 });
             }
         });
     };
 
     handleSelectedItem = selectedEntity => () => {
-        const {activeImport} = this.state;
-        if (!activeImport) {
+        const {activeImport, success} = this.state;
+        if (!activeImport && !success) {
             console.log("handleSelectedItem", selectedEntity);
             this.setState({entity: selectedEntity, nextEntity: {}});
+        } else if (success) {
+            this.setState(prevState => {
+                return {...defaultValues, entity: prevState.nextEntity}
+            });
         } else {
             const {entity} = this.state;
             if (selectedEntity.key !== entity.key) {

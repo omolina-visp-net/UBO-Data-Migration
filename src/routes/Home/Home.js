@@ -120,7 +120,7 @@ const entities = [
         key: "package",
         icon: "Category"
     }
-]
+];
 
 
 class Home extends React.Component {
@@ -145,7 +145,7 @@ class Home extends React.Component {
         localStorage.removeItem("Importer.selectedIspId");
         this.props.history.push("/login");
         window.location.reload();
-    }
+    };
 
     renderIcon = (iconName) => {
         switch (iconName) {
@@ -156,7 +156,7 @@ class Home extends React.Component {
             default:
                 return <Domain/>
         }
-    }
+    };
 
     renderItemList = (handleSelect) => {
         return entities.map((entity, index) => (
@@ -167,7 +167,7 @@ class Home extends React.Component {
                 <ListItemText primary={entity.name}/>
             </ListItem>
         ))
-    }
+    };
 
     render() {
         const {classes, theme} = this.props;
