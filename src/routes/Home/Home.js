@@ -17,13 +17,14 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import SupervisorAccountIcon from '@material-ui/icons/SupervisorAccount';
+import Domain from '@material-ui/icons/Domain';
 import Category from '@material-ui/icons/Category';
 import vispIcon from "../../assets/sidenav-logo-small.png";
 import {withRouter} from "react-router-dom";
 import IspSelect from "../../components/IspSelect";
 import {IspContext} from "../../context/IspProvider"
+import {ImportDataContext} from "../../context/ImportDataProvider"
 import Typography from "@material-ui/core/Typography/Typography";
-import ImportDataProvider from "../../context/ImportDataProvider";
 import Import from "../../components/ImportStepper/Import";
 
 const drawerWidth = 260;
@@ -108,15 +109,23 @@ const styles = theme => ({
     },
 });
 
+const entities = [
+    {
+        name: "Customers",
+        key: "customer",
+        icon: "SupervisorAccountIcon"
+    },
+    {
+        name: "Packages",
+        key: "package",
+        icon: "Category"
+    }
+]
+
 
 class Home extends React.Component {
     state = {
-        open: false,
-        dialogOpen: false
-    };
-
-    handleClose = () => {
-        this.setState({dialogOpen: false});
+        open: false
     };
 
 
@@ -138,17 +147,40 @@ class Home extends React.Component {
         window.location.reload();
     }
 
+    renderIcon = (iconName) => {
+        switch (iconName) {
+            case "SupervisorAccountIcon":
+                return <SupervisorAccountIcon/>;
+            case "Category":
+                return <Category/>;
+            default:
+                return <Domain/>
+        }
+    }
+
+    renderItemList = (handleSelect) => {
+        return entities.map((entity, index) => (
+            <ListItem button key={entity.key} onClick={handleSelect(entity)}>
+                <ListItemIcon>
+                    {this.renderIcon(entity.icon)}
+                </ListItemIcon>
+                <ListItemText primary={entity.name}/>
+            </ListItem>
+        ))
+    }
+
     render() {
         const {classes, theme} = this.props;
         const {open} = this.state;
         return (
 
-
             <IspContext.Consumer>
                 {context => {
                     if (
                         context.state.ispId > 0
-                    )
+                    ) {
+                        const {setIspId, state} = context;
+                        const {ispId, appuserId} = state;
                         return (
                             <div className={classes.root}>
                                 <AppBar
@@ -175,64 +207,75 @@ class Home extends React.Component {
                                             <Typography
                                                 className={classes.grow}>
                                             </Typography>) : (<IspSelect
-                                            appuserId={context.state.appuserId}
-                                            ispId={Number.parseInt(context.state.ispId, 10)}
-                                            setIspId={context.setIspId}
+                                            appuserId={appuserId}
+                                            ispId={Number.parseInt(ispId, 10)}
+                                            setIspId={setIspId}
                                         />)
                                         }
 
                                         <Button color="inherit" onClick={this.handleLogout}>Logout</Button>
                                     </Toolbar>
                                 </AppBar>
+                                <ImportDataContext.Consumer>
+                                    {importDataContext => {
+                                        return (
+                                            <React.Fragment>
+                                                <Drawer
+                                                    className={classes.drawer}
+                                                    variant="persistent"
+                                                    anchor="left"
+                                                    open={open}
+                                                    classes={{
+                                                        paper: classes.drawerPaper,
+                                                    }}
+                                                >
+                                                    <div className={classes.drawerHeader}>
+                                                        <IconButton color="inherit" aria-label="Menu"
+                                                                    className={classNames(!open && classes.hide)}>
+                                                            <Avatar alt="Visp.net" src={vispIcon}
+                                                                    className={classes.avatar}/>
+                                                        </IconButton>
+                                                        <IspSelect
+                                                            appuserId={appuserId}
+                                                            ispId={Number.parseInt(ispId, 10)}
+                                                            setIspId={setIspId}
+                                                        />
+                                                        <IconButton onClick={this.handleDrawerClose}
+                                                                    className={classes.chevron}>
+                                                            {theme.direction === 'ltr' ? <ChevronLeftIcon/> :
+                                                                <ChevronRightIcon/>}
+                                                        </IconButton>
+                                                    </div>
+                                                    <Divider/>
+                                                    <List>
+                                                        {this.renderItemList(importDataContext.handleSelectedItem)}
+                                                    </List>
+                                                </Drawer>
 
-                                <Drawer
-                                    className={classes.drawer}
-                                    variant="persistent"
-                                    anchor="left"
-                                    open={open}
-                                    classes={{
-                                        paper: classes.drawerPaper,
+                                                <main
+                                                    className={classNames(classes.content, {
+                                                        [classes.contentShift]: open,
+                                                    })}
+                                                >
+                                                    <div className={classes.contentHeader}/>
+                                                    <Import
+                                                        entity={importDataContext.state.entity}
+                                                        activeImport={importDataContext.state.activeImport}
+                                                        openDialog={importDataContext.state.openDialog}
+                                                        setActiveImport={importDataContext.setActiveImport}
+                                                        handleCloseDialog={importDataContext.handleCloseDialog}
+                                                    />
+                                                </main>
+
+                                            </React.Fragment>
+                                        )
+
                                     }}
-                                >
-                                    <div className={classes.drawerHeader}>
-                                        <IconButton color="inherit" aria-label="Menu"
-                                                    className={classNames(!open && classes.hide)}>
-                                            <Avatar alt="Visp.net" src={vispIcon} className={classes.avatar}/>
-                                        </IconButton>
-                                        <IspSelect
-                                            appuserId={context.state.appuserId}
-                                            ispId={Number.parseInt(context.state.ispId, 10)}
-                                            setIspId={context.setIspId}
-                                        />
-                                        <IconButton onClick={this.handleDrawerClose} className={classes.chevron}>
-                                            {theme.direction === 'ltr' ? <ChevronLeftIcon/> : <ChevronRightIcon/>}
-                                        </IconButton>
-                                    </div>
-                                    <Divider/>
-                                    <List>
-                                        {['Customers', 'Packages'].map((text, index) => (
-                                            <ListItem button key={text}>
-                                                <ListItemIcon>{index % 2 === 0 ? <SupervisorAccountIcon/> :
-                                                    <Category/>}</ListItemIcon>
-                                                <ListItemText primary={text}/>
-                                            </ListItem>
-                                        ))}
-                                    </List>
-                                </Drawer>
+                                </ImportDataContext.Consumer>
 
-                                <main
-                                    className={classNames(classes.content, {
-                                        [classes.contentShift]: open,
-                                    })}
-                                >
-                                    <div className={classes.contentHeader}/>
-                                    <ImportDataProvider>
-                                        <Import handleClose={this.handleClose}/>
-                                    </ImportDataProvider>
-                                </main>
                             </div>
                         );
-                    return null;
+                    }
                 }}
             </IspContext.Consumer>
 

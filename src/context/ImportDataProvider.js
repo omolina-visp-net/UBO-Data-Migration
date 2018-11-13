@@ -3,28 +3,78 @@ import customerFields from "../data/customer_fields";
 import csv from 'csv';
 import {GET_SONAR_CUSTOMERS} from '../graphql/quries'
 
+const defaultEntity = {
+    name: "Customers",
+    key: "customer",
+    icon: "SupervisorAccountIcon"
+};
+
+const defaultValues = {
+    uboFields: customerFields.fields,
+    importData: [],
+    selectedOption: 0,
+    activeStep: 0,
+    success: false,
+    fileName: '',
+    sonarInputs: {
+        subdomain: '',
+        username: '',
+        password: '',
+        validated: false,
+    },
+    buttonNextEnabled: false,
+    loading: false,
+    errorMessage: '',
+    dataMap: {},
+    importTableHeader: [],
+    importTableRows: [],
+    activeImport: false,
+    entity: defaultEntity,
+    nextEntity: {},
+    openDialog: false
+}
 
 export const ImportDataContext = React.createContext();
+
 export default class ImportDataProvider extends React.Component {
-    state = {
-        uboFields: customerFields.fields,
-        importData: [],
-        selectedOption: 0,
-        activeStep: 0,
-        success: false,
-        fileName: '',
-        sonarInputs: {
-            subdomain: '',
-            username: '',
-            password: '',
-            validated: false,
-        },
-        buttonNextEnabled: false,
-        loading: false,
-        errorMessage: '',
-        dataMap: {},
-        importTableHeader: [],
-        importTableRows: []
+    state = {...defaultValues};
+
+    setActiveImport = (status) => {
+        this.setState({activeImport: status});
+    };
+
+    handleCloseDialog = (action) => event => {
+        this.setState(prevState => {
+            return {
+                openDialog: !prevState.openDialog,
+                activeImport: !action,
+                entity: action ? prevState.nextEntity : prevState.entity
+            }
+        }, () => {
+            if (action) {
+                this.setState(prevState => {
+                    return {...defaultValues, entity: prevState.nextEntity }
+                });
+            }
+        });
+    };
+
+    handleSelectedItem = selectedEntity => () => {
+        const {activeImport} = this.state;
+        if (!activeImport) {
+            console.log("handleSelectedItem", selectedEntity);
+            this.setState({entity: selectedEntity, nextEntity: {}});
+        } else {
+            const {entity} = this.state;
+            if (selectedEntity.key !== entity.key) {
+                this.setState(prevState => {
+                    return {
+                        openDialog: !prevState.openDialog,
+                        nextEntity: selectedEntity
+                    };
+                });
+            }
+        }
     };
 
     handleSonarInputChange = name => event => {
@@ -38,7 +88,8 @@ export default class ImportDataProvider extends React.Component {
                 validated: (subdomain !== '' && username !== '' && password !== '')
             };
             this.setState({
-                sonarInputs: updatedSOnarInputs
+                sonarInputs: updatedSOnarInputs,
+                activeImport: true
             }, () => {
                 this.enableNextButton();
             });
@@ -63,7 +114,7 @@ export default class ImportDataProvider extends React.Component {
                                     importData: data,
                                     importTableRows: [],
                                     importTableHeader: [],
-                                    // dataMap: {}
+                                    activeImport: true
                                 },
                                 () => {
                                     this.enableNextButton();
@@ -76,7 +127,6 @@ export default class ImportDataProvider extends React.Component {
             reader.readAsBinaryString(event.target.files[0]);
         }
     };
-
 
     setImportData = (data) => {
         this.setState({importData: data, loading: false});
@@ -108,12 +158,12 @@ export default class ImportDataProvider extends React.Component {
 
     };
 
-
     handleNext = (client) => event => {
         this.setState(state => ({
             buttonNextEnabled: false,
             activeStep: state.activeStep + 1,
-            loading: true
+            loading: true,
+            activeImport: true,
         }), async () => {
             if (this.state.selectedOption === 1 && this.state.activeStep === 1) {
                 await this.fetchedSonarCustomers(client);
@@ -271,25 +321,10 @@ export default class ImportDataProvider extends React.Component {
     }
 
     render() {
-        const {
-            activeStep, selectedOption, importData, fileName,
-            buttonNextEnabled, sonarInputs, uboFields, loading,
-            dataMap, importTableHeader, importTableRows
-        } = this.state;
         return (
             <ImportDataContext.Provider
                 value={{
-                    activeStep,
-                    selectedOption,
-                    importData,
-                    fileName,
-                    buttonNextEnabled,
-                    sonarInputs,
-                    uboFields,
-                    loading,
-                    dataMap,
-                    importTableHeader,
-                    importTableRows,
+                    state: this.state,
                     steps: this.steps(),
                     setImportData: this.setImportData,
                     updateImportData: this.updateImportData,
@@ -300,7 +335,10 @@ export default class ImportDataProvider extends React.Component {
                     handleSonarInputChange: this.handleSonarInputChange,
                     updateDataMap: this.updateDataMap,
                     removeRowImportTable: this.removeRowImportTable,
-                    updateRowImportTable: this.updateRowImportTable
+                    updateRowImportTable: this.updateRowImportTable,
+                    handleSelectedItem: this.handleSelectedItem,
+                    setActiveImport: this.setActiveImport,
+                    handleCloseDialog: this.handleCloseDialog,
                 }}
             >
                 {this.props.children}

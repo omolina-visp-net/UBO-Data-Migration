@@ -7,6 +7,7 @@ import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import {ImportDataContext} from "../../context/ImportDataProvider";
 import FooterControls from "./FooterControls";
+import AlertDialog from "./AlertDialog";
 
 
 const styles = theme => ({
@@ -47,27 +48,27 @@ const styles = theme => ({
 
 class Import extends Component {
     render() {
-        const {classes} = this.props;
+        const {classes, entity, handleCloseDialog, openDialog, setActiveImport} = this.props;
         return (
             <ImportDataContext.Consumer>
                 {context => {
                     if (!context) return (<div><Typography> Context should not be empty! </Typography></div>);
+                    const {loading} = context.state;
                     return (
                         <div className={classes.header}>
-                            {context.success ? (
+                            {loading ? (
                                 <div className={classes.loaderContent}>
                                     < CircularProgress className={classes.progress} size={100}/>
                                 </div>
                             ) : (
-
                                 <React.Fragment>
                                     <Typography variant="h6" color="inherit" className={classes.grow}>
-                                        Import Customers
+                                        Import {entity.name}
                                     </Typography>
                                     <Divider light/>
                                     <ImportStepper className={classes.paper}/>
-                                    <FooterControls/>
-
+                                    <FooterControls setActiveImport={setActiveImport}/>
+                                    <AlertDialog open={openDialog} handleClose={handleCloseDialog}/>
                                 </React.Fragment>
                             )}
                         </div>)
@@ -79,6 +80,11 @@ class Import extends Component {
 }
 
 Import.propTypes = {
-    classes: PropTypes.object.isRequired
+    classes: PropTypes.object.isRequired,
+    entity: PropTypes.object.isRequired,
+    handleCloseDialog: PropTypes.func.isRequired,
+    setActiveImport: PropTypes.func.isRequired,
+    activeImport: PropTypes.bool.isRequired,
+    openDialog: PropTypes.bool.isRequired,
 };
 export default withStyles(styles)(Import);

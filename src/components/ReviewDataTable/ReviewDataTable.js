@@ -34,7 +34,7 @@ class ReviewDataTable extends React.Component {
             <ImportDataContext.Consumer>
                 {context => {
                     if (!context) return (<div><Typography> Context should not be empty! </Typography></div>);
-                    const {importTableRows, importTableHeader} = context;
+                    const {importTableRows, importTableHeader} = context.state;
                     return (
                         <MUIDataTable
                             title={"Review import list"}

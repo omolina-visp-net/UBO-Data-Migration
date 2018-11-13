@@ -6,6 +6,7 @@ import {Route, Switch} from "react-router-dom";
 import PrivateRoute from "./routes/Login/PrivateRoute";
 import Home from "./routes/Home/Home";
 import Page404 from "./routes/Page404";
+import ImportDataProvider from "./context/ImportDataProvider";
 
 const theme = createMuiTheme({
     palette: {
@@ -38,12 +39,14 @@ class App extends Component {
         return (
             <IspProvider>
                 <EntityProvider>
-                    <MuiThemeProvider theme={theme}>
-                        <Switch>
-                            <PrivateRoute exact path="/" component={Home}/>
-                            <Route component={Page404}/>
-                        </Switch>
-                    </MuiThemeProvider>
+                    <ImportDataProvider>
+                        <MuiThemeProvider theme={theme}>
+                            <Switch>
+                                <PrivateRoute exact path="/" component={Home}/>
+                                <Route component={Page404}/>
+                            </Switch>
+                        </MuiThemeProvider>
+                    </ImportDataProvider>
                 </EntityProvider>
             </IspProvider>
         )

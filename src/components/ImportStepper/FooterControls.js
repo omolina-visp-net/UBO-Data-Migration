@@ -22,7 +22,8 @@ class FooterControls extends Component {
             <ImportDataContext.Consumer>
                 {context => {
                     if (!context) return (<div><Typography> Context should not be empty! </Typography></div>);
-                    if (context.activeStep < 3)
+                    const {activeStep, buttonNextEnabled} = context.state;
+                    if (activeStep < 3)
                         return (
                             <React.Fragment>
                                 <div className={classes.bottomControls}>
@@ -35,7 +36,7 @@ class FooterControls extends Component {
                                     >
                                         <Grid item>
                                             <Button
-                                                disabled={context.activeStep === 0}
+                                                disabled={activeStep === 0}
                                                 onClick={context.handleBack}
                                                 className={classes.backButton}
                                                 variant="contained"
@@ -46,11 +47,11 @@ class FooterControls extends Component {
                                         </Grid>
                                         <Grid item>
                                             <Button
-                                                disabled={!context.buttonNextEnabled}
+                                                disabled={!buttonNextEnabled}
                                                 variant="contained"
                                                 color="primary"
                                                 onClick={context.handleNext(client)}>
-                                                {context.activeStep === context.steps.length - 1 ? 'Import' : 'Next'}
+                                                {activeStep === context.steps.length - 1 ? 'Import' : 'Next'}
                                             </Button>
                                         </Grid>
                                     </Grid>

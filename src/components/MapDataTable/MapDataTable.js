@@ -35,16 +35,17 @@ class MapDataTable extends React.Component {
 
     renderList = (context) => {
         const {classes} = this.props;
+        const {uboFields, importData, dataMap} = context.state;
         return (
             <List className={classes.list}>
-                {context.uboFields.map(field => (
+                {uboFields.map(field => (
                     <ListItem key={field.key} button className={classes.lineItems}>
                         <DataFieldSelect
                             currentRow={field}
-                            importData={context.importData}
+                            importData={importData}
                             header={false}
                             updateDataMap={context.updateDataMap}
-                            dataMapValue={context.dataMap[field.key]}
+                            dataMapValue={dataMap[field.key]}
                         />
                         <CssBaseline/>
                     </ListItem>
@@ -55,11 +56,11 @@ class MapDataTable extends React.Component {
 
     render() {
         const {classes} = this.props;
-
         return (
             <ImportDataContext.Consumer>
                 {context => {
                     if (!context) return (<div><Typography> No data to map! </Typography></div>);
+                    const {loading} = context.state;
                     return (
                         <React.Fragment>
                             <Grid className={classes.root} container direction="column" spacing={0}>
@@ -73,7 +74,7 @@ class MapDataTable extends React.Component {
                                         <DataFieldSelect header={true}/>
                                     </div>
                                     <Divider light/>
-                                    {context.loading ? <Loading/> : this.renderList(context)}
+                                    {loading ? <Loading/> : this.renderList(context)}
                                 </Grid>
                             </Grid>
                         </React.Fragment>

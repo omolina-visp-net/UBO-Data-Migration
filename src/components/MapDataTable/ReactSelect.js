@@ -212,7 +212,7 @@ class ReactSelect extends React.Component {
             <ImportDataContext.Consumer>
                 {context => {
                     if (!context) return (<div><Typography> Context should not be empty! </Typography></div>);
-                    const {dataMap} = context;
+                    const {dataMap} = context.state;
                     const value = dataMap[uboFieldKey];
                     const selectValue = value ? {
                         value: dataMap[uboFieldKey],

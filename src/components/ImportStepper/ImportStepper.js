@@ -38,7 +38,7 @@ const styles = theme => ({
 });
 
 function getStepContent(context) {
-    const {activeStep} = context;
+    const {activeStep} = context.state;
     switch (activeStep) {
         case 0:
             return renderImportOptions();
@@ -78,14 +78,16 @@ class ImportStepper extends React.Component {
             <ImportDataContext.Consumer>
                 {context => {
                     if (!context) return (<div><Typography> Context should not be empty! </Typography></div>);
+                    const {state, steps} = context;
+                    const {activeStep} = state;
                     return (
                         <div className={classes.root}>
-                            {context.activeStep === context.steps.length ? (
-                               <ImportSuccess/>
+                            {activeStep === steps.length ? (
+                                <ImportSuccess/>
                             ) : (
                                 <Paper>
-                                    <Stepper activeStep={context.activeStep} alternativeLabel>
-                                        {context.steps.map(label => {
+                                    <Stepper activeStep={activeStep} alternativeLabel>
+                                        {steps.map(label => {
                                             return (
                                                 <Step key={label}>
                                                     <StepLabel>{label}</StepLabel>

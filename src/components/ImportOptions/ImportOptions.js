@@ -32,7 +32,8 @@ class ImportOptions extends React.Component {
             <ImportDataContext.Consumer>
                 {context => {
                     if (!context) return (<div><Typography> Context should not be empty! </Typography></div>);
-                    const {selectedOption, setSelectedOption, handleUploadEvent, fileName, handleSonarInputChange, sonarInputs} = context;
+                    const {setSelectedOption, handleUploadEvent, handleSonarInputChange, state} = context;
+                    const {selectedOption, fileName, sonarInputs} = state;
                     return (
                         <React.Fragment>
                             <div className={classes.root}>
@@ -50,7 +51,7 @@ class ImportOptions extends React.Component {
                                     </RadioGroup>
                                 </FormControl>
                             </div>
-                            {context.selectedOption === 0 ? (
+                            {selectedOption === 0 ? (
                                 <Upload handleUploadEvent={handleUploadEvent} fileName={fileName}/>) : (
                                 <Sonar handleSonarInputChange={handleSonarInputChange} sonarInputs={sonarInputs}/>)}
 
