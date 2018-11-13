@@ -1,27 +1,8 @@
 import React from "react";
 import customerFields from "../data/customer_fields";
 import csv from 'csv';
-import gql from "graphql-tag";
+import {GET_SONAR_CUSTOMERS} from '../graphql/quries'
 
-const GET_SONAR_CUSTOMERS = gql`{
-    sonarCustomers(domain: "tekwav", username: "datasync", password: "Datasync!123") {
-        Id
-        FirstName
-        LastName
-        Username
-        BalanceTotal
-        AddressLine1
-        AddressLine2
-        City
-        State
-        EmailAddress
-        MobilePhone
-        WorkPhone
-        HomePhone
-        Fax
-    }
-}
-`;
 
 export const ImportDataContext = React.createContext();
 export default class ImportDataProvider extends React.Component {
@@ -82,7 +63,7 @@ export default class ImportDataProvider extends React.Component {
                                     importData: data,
                                     importTableRows: [],
                                     importTableHeader: [],
-                                    dataMap: {}
+                                    // dataMap: {}
                                 },
                                 () => {
                                     this.enableNextButton();
@@ -149,9 +130,6 @@ export default class ImportDataProvider extends React.Component {
         const steps = this.steps();
         if (activeStep === steps.length - 1) {
             this.setState({success: true});
-            setTimeout(() => {
-                this.props.handleClose();
-            }, 1000);
         }
     };
 
@@ -187,8 +165,11 @@ export default class ImportDataProvider extends React.Component {
         }
 
         let enable = true;
+        console.log({activeStep});
         switch (activeStep) {
             case 1:
+                console.log({dataMap});
+                console.log(Object.keys(dataMap));
                 for (const key of Object.keys(dataMap)) {
                     const value = dataMap[key];
                     if (!value) {

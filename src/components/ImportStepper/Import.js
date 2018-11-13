@@ -3,10 +3,6 @@ import PropTypes from 'prop-types';
 import {withStyles} from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
 import ImportStepper from "./ImportStepper";
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import {ImportDataContext} from "../../context/ImportDataProvider";
@@ -51,37 +47,30 @@ const styles = theme => ({
 
 class Import extends Component {
     render() {
-        const {classes, handleClose, selectedEntity} = this.props;
+        const {classes} = this.props;
         return (
             <ImportDataContext.Consumer>
                 {context => {
                     if (!context) return (<div><Typography> Context should not be empty! </Typography></div>);
-                    return (<div className={classes.header}>
-                        {context.success ? (
-                            <div className={classes.loaderContent}>
-                                < CircularProgress className={classes.progress} size={100}/>
-                            </div>
-                        ) : (
+                    return (
+                        <div className={classes.header}>
+                            {context.success ? (
+                                <div className={classes.loaderContent}>
+                                    < CircularProgress className={classes.progress} size={100}/>
+                                </div>
+                            ) : (
 
-                            <React.Fragment>
-                                <AppBar>
-                                    <Toolbar>
-                                        <Typography variant="h6" color="inherit" className={classes.grow}>
-                                            Import {selectedEntity}
-                                        </Typography>
+                                <React.Fragment>
+                                    <Typography variant="h6" color="inherit" className={classes.grow}>
+                                        Import Customers
+                                    </Typography>
+                                    <Divider light/>
+                                    <ImportStepper className={classes.paper}/>
+                                    <FooterControls/>
 
-                                        <IconButton color="inherit" onClick={handleClose} aria-label="Close">
-                                            <CloseIcon/>
-                                        </IconButton>
-                                    </Toolbar>
-                                </AppBar>
-                                <Divider light/>
-                                <ImportStepper className={classes.paper}/>
-                                <FooterControls/>
-
-                            </React.Fragment>
-                        )}
-                    </div>)
+                                </React.Fragment>
+                            )}
+                        </div>)
                 }}
 
             </ImportDataContext.Consumer>
@@ -90,8 +79,6 @@ class Import extends Component {
 }
 
 Import.propTypes = {
-    classes: PropTypes.object.isRequired,
-    handleClose: PropTypes.func.isRequired,
-    selectedEntity: PropTypes.string.isRequired
+    classes: PropTypes.object.isRequired
 };
 export default withStyles(styles)(Import);

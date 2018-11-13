@@ -17,18 +17,8 @@ const styles = theme => ({
     },
     list: {
         width: '100%',
+        height: '100%',
         backgroundColor: theme.palette.background.paper,
-        overflow: 'auto',
-        maxHeight: 500,
-        [theme.breakpoints.up('md')]: {
-            maxHeight: 600,
-        },
-        [theme.breakpoints.between('xs', 'sm')]: {
-            maxHeight: 400,
-        },
-        [theme.breakpoints.down('xs')]: {
-            maxHeight: 300,
-        },
     },
     headerLabel: {
         marginTop: theme.spacing.unit * 2,

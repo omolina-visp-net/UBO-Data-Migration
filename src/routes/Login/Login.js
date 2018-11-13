@@ -134,17 +134,8 @@ class Login extends React.Component {
         const {username, password, remember} = formData;
 
         const data = (await this.getToken(username, password));
-
-        if (data.request && !data.request.length && !data.data && !data.response) {
-            const error = "Can't Login at this time. Please try again later.";
-            this.setState({loading: false, error});
-        } else if (!data.data && (data.response.status === 401 || data.response.status === 400)) {
-            const error = data.response.data.message;
-            this.setState({loading: false, error});
-        } else {
+        if (data && data.status === 200) {
             const {appuserId, ispId} = data.data.payload;
-            console.log(data.data.token);
-
             localStorage.setItem("Importer.token", data.data.token);
             localStorage.setItem("Importer.appuserId", appuserId);
             localStorage.setItem("Importer.ispId", JSON.stringify(ispId));
@@ -158,6 +149,9 @@ class Login extends React.Component {
             }
             this.setState({loading: false, success: true});
             this.props.history.push("/");
+        } else {
+            const error = data.message;
+            this.setState({loading: false, error});
         }
     }
 

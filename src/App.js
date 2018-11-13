@@ -1,12 +1,11 @@
 import React, {Component} from 'react'
-import NavBar from './components/NavBar'
 import {createMuiTheme, MuiThemeProvider} from '@material-ui/core/styles';
-import {Route, Switch} from "react-router-dom";
-import Page404 from "./routes/Page404";
-import PrivateRoute from "./routes/Login/PrivateRoute";
 import IspProvider from "./context/IspProvider";
-import Home from "./routes/Home/Home";
 import EntityProvider from "./context/EntityProvider";
+import {Route, Switch} from "react-router-dom";
+import PrivateRoute from "./routes/Login/PrivateRoute";
+import Home from "./routes/Home/Home";
+import Page404 from "./routes/Page404";
 
 const theme = createMuiTheme({
     palette: {
@@ -40,13 +39,10 @@ class App extends Component {
             <IspProvider>
                 <EntityProvider>
                     <MuiThemeProvider theme={theme}>
-                        <NavBar/>
-                        <div>
-                            <Switch>
-                                <PrivateRoute exact path="/" component={Home}/>
-                                <Route component={Page404}/>
-                            </Switch>
-                        </div>
+                        <Switch>
+                            <PrivateRoute exact path="/" component={Home}/>
+                            <Route component={Page404}/>
+                        </Switch>
                     </MuiThemeProvider>
                 </EntityProvider>
             </IspProvider>

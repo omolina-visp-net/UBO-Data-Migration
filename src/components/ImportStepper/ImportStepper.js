@@ -11,6 +11,7 @@ import MapDataTable from "../MapDataTable/MapDataTable";
 import Paper from '@material-ui/core/Paper';
 import ReviewDataTable from "../ReviewDataTable/ReviewDataTable";
 import {ImportDataContext} from "../../context/ImportDataProvider";
+import ImportSuccess from "./ImportSuccess";
 
 
 const styles = theme => ({
@@ -20,6 +21,7 @@ const styles = theme => ({
     content: {
         margin: theme.spacing.unit + 5,
         paddingBottom: theme.spacing.unit + 5,
+        height: 'auto'
     },
     backButton: {
         marginRight: theme.spacing.unit,
@@ -79,9 +81,7 @@ class ImportStepper extends React.Component {
                     return (
                         <div className={classes.root}>
                             {context.activeStep === context.steps.length ? (
-                                <div>
-                                    <Typography>Success!</Typography>
-                                </div>
+                               <ImportSuccess/>
                             ) : (
                                 <Paper>
                                     <Stepper activeStep={context.activeStep} alternativeLabel>
