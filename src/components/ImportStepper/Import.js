@@ -12,7 +12,8 @@ import AlertDialog from "./AlertDialog";
 
 const styles = theme => ({
     header: {
-        margin: theme.spacing.unit * 4,
+        marginLeft: theme.spacing.unit * 2,
+        marginRight: theme.spacing.unit * 2,
     },
     content: {
         marginTop: '20%'
@@ -62,7 +63,7 @@ class Import extends Component {
                                 </div>
                             ) : (
                                 <React.Fragment>
-                                    <Typography variant="h6" color="inherit" className={classes.grow}>
+                                    <Typography variant="display1" color="inherit" className={classes.grow}>
                                         Import {entity.name}
                                     </Typography>
                                     <Divider light/>

@@ -7,6 +7,7 @@ import PrivateRoute from "./routes/Login/PrivateRoute";
 import Home from "./routes/Home/Home";
 import Page404 from "./routes/Page404";
 import ImportDataProvider from "./context/ImportDataProvider";
+import Footer from "./components/Footer";
 
 const theme = createMuiTheme({
     palette: {
@@ -45,6 +46,7 @@ class App extends Component {
                                 <PrivateRoute exact path="/" component={Home}/>
                                 <Route component={Page404}/>
                             </Switch>
+                            <Footer/>
                         </MuiThemeProvider>
                     </ImportDataProvider>
                 </EntityProvider>

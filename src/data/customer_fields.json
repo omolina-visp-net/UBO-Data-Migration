@@ -7,50 +7,6 @@
     {
       "key": "password",
       "label": "Password"
-    },
-    {
-      "key": "first_name",
-      "label": "First Name"
-    },
-    {
-      "key": "last_name",
-      "label": "Last Name"
-    },
-    {
-      "key": "address_line1",
-      "label": "Address Line 1"
-    },
-    {
-      "key": "address_line2",
-      "label": "Address Line 2"
-    },
-    {
-      "key": "city",
-      "label": "City"
-    },
-    {
-      "key": "state",
-      "label": "State"
-    },
-    {
-      "key": "email",
-      "label": "Email Address"
-    },
-    {
-      "key": "mobile_phone",
-      "label": "Mobile Phone"
-    },
-    {
-      "key": "home_phone",
-      "label": "Home Phone"
-    },
-    {
-      "key": "work_phone",
-      "label": "Work Phone"
-    },
-    {
-      "key": "fax",
-      "label": "Fax"
     }
   ]
 }
