@@ -29,7 +29,7 @@ class AlertDialog extends React.Component {
 
                     <DialogContent>
                         <DialogContentText id="alert-dialog-slide-description">
-                            Do you want to leaving without saving?
+                            Do you want to leave without saving?
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
