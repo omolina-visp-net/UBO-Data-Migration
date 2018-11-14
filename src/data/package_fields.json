@@ -1,0 +1,36 @@
+{
+  "fields": [
+    {
+      "key": "customer_id",
+      "label": "Customer Id"
+    },
+    {
+      "key": "package_name",
+      "label": "Package Name"
+    },
+    {
+      "key": "service_type",
+      "label": "Service Type"
+    },
+    {
+      "key": "billing_start_date",
+      "label": "Billing Start Date"
+    },
+    {
+      "key": "username",
+      "label": "Username"
+    },
+    {
+      "key": "password",
+      "label": "Password"
+    },
+    {
+      "key": "ip",
+      "label": "IP"
+    },
+    {
+      "key": "mac",
+      "label": "MAC Address"
+    }
+  ]
+}

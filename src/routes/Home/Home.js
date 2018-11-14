@@ -248,7 +248,7 @@ class Home extends React.Component {
                                                     </div>
                                                     <Divider/>
                                                     <List>
-                                                        {this.renderItemList(importDataContext.handleSelectedItem)}
+                                                        {this.renderItemList(importDataContext.handleSelectedEntity)}
                                                     </List>
                                                 </Drawer>
 

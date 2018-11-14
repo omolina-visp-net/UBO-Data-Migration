@@ -4,7 +4,6 @@ import {withStyles} from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import AppBar from '@material-ui/core/AppBar';
-import Avatar from '@material-ui/core/Avatar';
 import vispLogo from '../assets/visp-logo-footer.png'
 
 
@@ -21,7 +20,7 @@ class Footer extends Component {
         const {classes} = this.props;
         const currentYear = new Date().getFullYear();
         return (
-            <AppBar position="fixed" color="primary" className={classes.appBar} color="default">
+            <AppBar position="fixed" className={classes.appBar} color="default">
                 <Grid
                     container
                     direction="row"

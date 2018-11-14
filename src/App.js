@@ -1,13 +1,11 @@
 import React, {Component} from 'react'
 import {createMuiTheme, MuiThemeProvider} from '@material-ui/core/styles';
 import IspProvider from "./context/IspProvider";
-import EntityProvider from "./context/EntityProvider";
 import {Route, Switch} from "react-router-dom";
 import PrivateRoute from "./routes/Login/PrivateRoute";
 import Home from "./routes/Home/Home";
 import Page404 from "./routes/Page404";
 import ImportDataProvider from "./context/ImportDataProvider";
-import Footer from "./components/Footer";
 
 const theme = createMuiTheme({
     palette: {
@@ -39,17 +37,14 @@ class App extends Component {
     render() {
         return (
             <IspProvider>
-                <EntityProvider>
-                    <ImportDataProvider>
-                        <MuiThemeProvider theme={theme}>
-                            <Switch>
-                                <PrivateRoute exact path="/" component={Home}/>
-                                <Route component={Page404}/>
-                            </Switch>
-                            <Footer/>
-                        </MuiThemeProvider>
-                    </ImportDataProvider>
-                </EntityProvider>
+                <ImportDataProvider>
+                    <MuiThemeProvider theme={theme}>
+                        <Switch>
+                            <PrivateRoute exact path="/" component={Home}/>
+                            <Route component={Page404}/>
+                        </Switch>
+                    </MuiThemeProvider>
+                </ImportDataProvider>
             </IspProvider>
         )
     }

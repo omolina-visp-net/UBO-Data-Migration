@@ -1,5 +1,6 @@
 import React from "react";
 import customerFields from "../data/customer_fields";
+import packageFields from "../data/package_fields";
 import csv from 'csv';
 import {GET_SONAR_CUSTOMERS} from '../graphql/quries'
 
@@ -54,19 +55,27 @@ export default class ImportDataProvider extends React.Component {
             if (action) {
                 this.setState(prevState => {
                     return {...defaultValues, entity: prevState.nextEntity}
+                }, async () => {
+                    //Initialize ubo map fields
+                    await this.initMapFields(this.state.entity);
                 });
             }
         });
     };
 
-    handleSelectedItem = selectedEntity => () => {
+    handleSelectedEntity = selectedEntity => () => {
         const {activeImport, success} = this.state;
         if (!activeImport && !success) {
-            console.log("handleSelectedItem", selectedEntity);
-            this.setState({entity: selectedEntity, nextEntity: {}});
+            this.setState({entity: selectedEntity, nextEntity: {}}, async () => {
+                //Initialize ubo map fields
+                await this.initMapFields(this.state.entity);
+            });
         } else if (success) {
             this.setState(prevState => {
                 return {...defaultValues, entity: prevState.nextEntity}
+            }, async () => {
+                //Initialize ubo map fields
+                await this.initMapFields(this.state.entity);
             });
         } else {
             const {entity} = this.state;
@@ -76,10 +85,14 @@ export default class ImportDataProvider extends React.Component {
                         openDialog: !prevState.openDialog,
                         nextEntity: selectedEntity
                     };
+                }, async () => {
+                    //Initialize ubo map fields
+                    await this.initMapFields(this.state.entity);
                 });
             }
         }
     };
+
 
     handleSonarInputChange = name => event => {
         const newSonarInputs = {...this.state.sonarInputs, [name]: event.target.value};
@@ -108,11 +121,9 @@ export default class ImportDataProvider extends React.Component {
             const reader = new FileReader();
             reader.onload = async () => {
                 if (!reader.result) {
-                    console.log({error: "No file uploaded!"});
                 } else {
                     csv.parse(reader.result, {columns: true}, (err, data) => {
                         if (err) {
-                            console.log({error: "Error parsing csv file!"});
                         } else {
                             this.setState({
                                     importData: data,
@@ -162,7 +173,29 @@ export default class ImportDataProvider extends React.Component {
 
     };
 
-    handleNext = (client) => event => {
+    initMapFields = async (entity) => {
+        const {key} = entity;
+        let entityFields = [];
+        switch (key) {
+            case "customer":
+                entityFields = customerFields.fields;
+                break;
+            case "package":
+                entityFields = packageFields.fields;
+                break;
+            default:
+            // ?
+        }
+        if (entityFields.length) {
+            this.setState({uboFields: entityFields}, async () => {
+                await this.state.uboFields.map(async uboField => {
+                    await this.initDataMap(uboField.key, "");
+                });
+            })
+        }
+    };
+
+    handleNext = (client,) => event => {
         this.setState(state => ({
             buttonNextEnabled: false,
             activeStep: state.activeStep + 1,
@@ -172,7 +205,7 @@ export default class ImportDataProvider extends React.Component {
             if (this.state.selectedOption === 1 && this.state.activeStep === 1) {
                 await this.fetchedSonarCustomers(client);
             } else if (this.state.activeStep === 2) {
-                this.initImportTable();
+                await this.initImportTable();
             } else {
                 setTimeout(() => {
                     this.setState({loading: false});
@@ -219,11 +252,8 @@ export default class ImportDataProvider extends React.Component {
         }
 
         let enable = true;
-        console.log({activeStep});
         switch (activeStep) {
             case 1:
-                console.log({dataMap});
-                console.log(Object.keys(dataMap));
                 for (const key of Object.keys(dataMap)) {
                     const value = dataMap[key];
                     if (!value) {
@@ -317,13 +347,6 @@ export default class ImportDataProvider extends React.Component {
         })
     };
 
-    componentDidMount() {
-        const {uboFields} = this.state;
-        uboFields.map(async uboField => {
-            await this.initDataMap(uboField.key, "");
-        });
-    }
-
     render() {
         return (
             <ImportDataContext.Provider
@@ -340,7 +363,7 @@ export default class ImportDataProvider extends React.Component {
                     updateDataMap: this.updateDataMap,
                     removeRowImportTable: this.removeRowImportTable,
                     updateRowImportTable: this.updateRowImportTable,
-                    handleSelectedItem: this.handleSelectedItem,
+                    handleSelectedEntity: this.handleSelectedEntity,
                     setActiveImport: this.setActiveImport,
                     handleCloseDialog: this.handleCloseDialog,
                 }}
